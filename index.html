@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAFIR PULSE TIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=Barlow:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:       #0a0c0f;
+  --bg2:      #0f1218;
+  --bg3:      #151a22;
+  --border:   #1e2530;
+  --border2:  #252e3d;
+  --text:     #e2e8f0;
+  --muted:    #4a5568;
+  --muted2:   #64748b;
+  --green:    #10b981;
+  --green2:   #059669;
+  --red:      #ef4444;
+  --red2:     #dc2626;
+  --orange:   #f59e0b;
+  --blue:     #3b82f6;
+  --purple:   #8b5cf6;
+  --teal:     #14b8a6;
+  --accent:   #f59e0b;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left { display:flex; align-items:center; gap:16px; }
+
+.logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: .04em;
+  color: var(--accent);
+}
+.logo span { color: var(--muted2); font-weight: 400; }
+
+.header-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  border: 1px solid var(--border2);
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+
+.period-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px;
+}
+.ptab {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  padding: 4px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all .15s;
+  border: none;
+  background: transparent;
+}
+.ptab:hover { color: var(--text); }
+.ptab.active {
+  background: var(--accent);
+  color: #000;
+}
+
+.header-right {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* ── KPI STRIP ── */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+.kpi {
+  padding: 16px 20px;
+  border-right: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.kpi:last-child { border-right: none; }
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.kpi:hover::before { opacity: 1; }
+.kpi-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.kpi-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+}
+.kpi-sub {
+  font-size: 11px;
+  color: var(--muted2);
+  margin-top: 4px;
+}
+
+/* ── MAIN LAYOUT ── */
+.main { padding: 20px 24px; display: flex; flex-direction: column; gap: 20px; }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── INSIGHT BAR ── */
+.insight {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--muted2);
+  line-height: 1.6;
+}
+.insight strong { color: var(--text); }
+.insight .tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 2px;
+  margin: 0 2px;
+}
+.tag-green { background: rgba(16,185,129,.15); color: #6ee7b7; }
+.tag-red   { background: rgba(239,68,68,.15);  color: #fca5a5; }
+.tag-orange{ background: rgba(245,158,11,.15); color: #fcd34d; }
+
+/* ── GRID LAYOUTS ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.g21 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+.g12 { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.card-header {
+  padding: 14px 18px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.card-desc {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.card-body { padding: 16px 18px; }
+.chart-wrap { position: relative; }
+
+/* ── ARAÇ TABLOSU ── */
+.arac-tablo {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.arac-tablo th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.arac-tablo th.right { text-align: right; }
+.arac-tablo td {
+  padding: 7px 10px;
+  border-bottom: 1px solid rgba(30,37,48,.6);
+  vertical-align: middle;
+}
+.arac-tablo tr:hover td { background: rgba(255,255,255,.02); }
+.arac-tablo td.mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-align: right;
+}
+.plaka-cell {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.kar-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.kar-bar {
+  height: 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ── ARAÇ KARTLARI ── */
+.arac-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.arac-kart {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border2);
+  border-radius: 4px;
+  padding: 12px;
+  transition: border-color .15s;
+}
+.arac-kart:hover { border-left-color: var(--accent); }
+.ak-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.ak-plaka { font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:800; letter-spacing:.04em; }
+.ak-model { font-size:10px; color:var(--muted); margin-top:1px; }
+.ak-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-weight: 700;
+}
+.ak-metrics {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+.ak-m { }
+.ak-ml { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px; }
+.ak-mv { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; }
+.ak-bar { height:3px; background:var(--border); border-radius:2px; margin-top:8px; overflow:hidden; }
+.ak-bf  { height:100%; border-radius:2px; transition:width .4s; }
+
+/* ── SCROLLABLE TABLE ── */
+.scroll-wrap { overflow-x: auto; max-height: 480px; overflow-y: auto; }
+.scroll-wrap::-webkit-scrollbar { width:4px; height:4px; }
+.scroll-wrap::-webkit-scrollbar-track { background:transparent; }
+.scroll-wrap::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+/* ── DÖNEM BADGE ── */
+#donem-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* ── RANK BARS ── */
+.rank-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(30,37,48,.5);
+}
+.rank-item:last-child { border-bottom: none; }
+.rank-plaka {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted2);
+  width: 80px;
+  flex-shrink: 0;
+}
+.rank-bar-outer {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.rank-bar-inner { height: 100%; border-radius: 3px; }
+.rank-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  width: 70px;
+  text-align: right;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">SAFIR PULSE <span>TIR</span></div>
+    <div class="header-badge">30 Araç · Hafriyat Filosu</div>
+    <div class="header-badge">28 Damperli + 2 Lowbet</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="period-tabs">
+      <button class="ptab active" onclick="setPeriod('2026',this)">2026 Özet</button>
+      <button class="ptab" onclick="setPeriod('oca',this)">Ocak</button>
+      <button class="ptab" onclick="setPeriod('sub',this)">Şubat</button>
+      <button class="ptab" onclick="setPeriod('mar',this)">Mart</button>
+    </div>
+    <div id="donem-text">Dönem: 2026 Özet</div>
+  </div>
+  <div class="header-right">Son güncelleme: Mart 2026</div>
+</div>
+
+<!-- KPI STRIP -->
+<div class="kpi-strip">
+  <div class="kpi">
+    <div class="kpi-label">Toplam Araç</div>
+    <div class="kpi-val" style="color:var(--accent)">30</div>
+    <div class="kpi-sub">28 damper · 2 lowbet</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Toplam Gelir</div>
+    <div class="kpi-val" id="kpi-gelir" style="color:var(--green)">—</div>
+    <div class="kpi-sub" id="kpi-gelir-sub">—</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Toplam Gider</div>
+    <div class="kpi-val" id="kpi-gider" style="color:var(--red)">—</div>
+    <div class="kpi-sub" id="kpi-gider-sub">—</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Net Kar / Zarar</div>
+    <div class="kpi-val" id="kpi-kar">—</div>
+    <div class="kpi-sub" id="kpi-kar-sub">—</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Teknik Gider</div>
+    <div class="kpi-val" id="kpi-teknik" style="color:var(--purple)">—</div>
+    <div class="kpi-sub" id="kpi-teknik-sub">Arıza + Lastik</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Karlı / Zararlı</div>
+    <div class="kpi-val" id="kpi-kz">—</div>
+    <div class="kpi-sub" id="kpi-kz-sub">araç</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- INSIGHT -->
+  <div class="insight" id="insight-bar">Veri yükleniyor...</div>
+
+  <!-- SATIR 1: Kar/Zarar grafik + Teknik Gider stacked -->
+  <div class="g21">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Net Kar / Zarar — Araç Bazlı</div>
+          <div class="card-desc">Yeşil = karlı · Kırmızı = zararlı · Karlılık sıralaması</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:280px">
+          <canvas id="chart-kar"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Teknik Gider</div>
+          <div class="card-desc">🟣 Arıza & Bakım · 🟡 Lastik</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:280px">
+          <canvas id="chart-teknik"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SATIR 2: Gelir vs Gider + Mazot dağılımı -->
+  <div class="g2">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Gelir vs Gider</div>
+          <div class="card-desc">Araç bazlı gelir/gider karşılaştırması</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:260px">
+          <canvas id="chart-gelir-gider"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Gider Dağılımı</div>
+          <div class="card-desc">Mazot · Teknik · Diğer kalemlerin payı</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:260px">
+          <canvas id="chart-dagılım"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SATIR 3: Top 5 iyi/kötü + Teknik gider sıralama -->
+  <div class="g3">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🏆 En Karlı 5 Araç</div>
+      </div>
+      <div class="card-body" id="top-karli"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚠️ En Zararlı 5 Araç</div>
+      </div>
+      <div class="card-body" id="top-zararlı"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🔧 En Yüksek Teknik Gider</div>
+      </div>
+      <div class="card-body" id="top-teknik"></div>
+    </div>
+  </div>
+
+  <!-- SATIR 4: Araç tablosu -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Araç Detay Tablosu</div>
+        <div class="card-desc">Tüm 30 araç — gelir, gider, kar, teknik gider, lastik</div>
+      </div>
+    </div>
+    <div class="scroll-wrap">
+      <table class="arac-tablo" id="arac-tablo">
+        <thead>
+          <tr>
+            <th>Plaka</th>
+            <th>Tip</th>
+            <th class="right">Gelir (₺)</th>
+            <th class="right">Gider (₺)</th>
+            <th class="right">Net Kar (₺)</th>
+            <th class="right">Mazot (₺)</th>
+            <th class="right">Teknik Top. (₺)</th>
+            <th class="right">Arıza (₺)</th>
+            <th class="right">Lastik (₺)</th>
+            <th class="right">Karlılık %</th>
+          </tr>
+        </thead>
+        <tbody id="tablo-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SATIR 5: Araç kartları -->
+  <div>
+    <div class="section-label">Araç Kartları</div>
+    <div class="arac-grid" id="arac-grid"></div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// VERİ
+// ═══════════════════════════════════════════════════════════════════
+
+// Araç listesi
+const ARACLAR = [
+  {plaka:'34 LUF 69', tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 4969',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 LUD 69', tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 6869',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 LEK 69', tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 5169',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 LUZ 69', tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 8169',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 JIE 69', tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 5069',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 TG 3769',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 7069',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 TG 3869',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 2269',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 VBF 69', tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 8669',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 VBL 69', tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 0669',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 BDM 178',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 8369',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 BDF 517',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 1669',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 KV 0169',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 1969',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 KV 0469',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 9269',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 KV 9169',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 8769',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 KV 0569',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 1869',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 KV 0869',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 0769',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 KV 0069',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 9769',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 KV 0369',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 5869',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 KV 4969',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 8969',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 KV 9269',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 7369',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 KV 6369',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 0469',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 HD 8469',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 HD 5469',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 BDM 249',tip:'Damper', marka:'Scania'},
+  {plaka:'34 HD 9569',tip:'Damper', marka:'Mercedes'},
+  {plaka:'34 FBU 710',tip:'Damper', marka:'Scania'},
+  {plaka:'34 SH 1328',tip:'Damper', marka:'Scania'},
+  {plaka:'06 EAH 375',tip:'Damper', marka:'Scania'},
+  {plaka:'34 TK 6169',tip:'Damper', marka:'Scania'},
+  {plaka:'34 LUA 69', tip:'Damper', marka:'Scania'},
+  {plaka:'34 KM 6180',tip:'Damper', marka:'Scania'},
+  {plaka:'34 JIF 69', tip:'Lowbet', marka:'Scania'},
+  {plaka:'34 HZT 069',tip:'Lowbet', marka:'Scania'},
+  {plaka:'34 JH 1469',tip:'Damper', marka:'Scania'},
+  {plaka:'34 GKF 335',tip:'Lowbet', marka:'Scania'},
+];
+
+// Ocak 2026 — Karlılık (gelir/gider/kar/mazot)
+const OCA_KARL = {
+  '34 LUF 69': {gelir:305861,gider:374939,kar:-69078,mazot:144087},
+  '34 HD 4969':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 LUD 69': {gelir:359917,gider:371036,kar:-11119,mazot:152937},
+  '34 HD 6869':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 LEK 69': {gelir:299716,gider:320177,kar:-20460,mazot:103463},
+  '34 HD 5169':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 LUZ 69': {gelir:10513, gider:447811,kar:-437298,mazot:0},
+  '34 HD 8169':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 JIE 69': {gelir:356179,gider:352692,kar:3487,  mazot:149964},
+  '34 HD 5069':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 TG 3769':{gelir:267515,gider:322935,kar:-55419,mazot:124758},
+  '34 HD 7069':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 TG 3869':{gelir:135389,gider:179930,kar:-44541,mazot:42154},
+  '34 HD 2269':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 VBF 69': {gelir:143997,gider:237053,kar:-93057,mazot:64129},
+  '34 HD 8669':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 VBL 69': {gelir:262190,gider:281334,kar:-19143,mazot:100123},
+  '34 HD 0669':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 BDM 178':{gelir:241679,gider:358603,kar:-116924,mazot:113371},
+  '34 HD 8369':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 BDF 517':{gelir:229138,gider:387793,kar:-158656,mazot:96381},
+  '34 HD 1669':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 KV 0169':{gelir:310504,gider:291372,kar:19133, mazot:149342},
+  '34 HD 1969':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 KV 0469':{gelir:297355,gider:304955,kar:-7600, mazot:139527},
+  '34 HD 9269':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 KV 9169':{gelir:266428,gider:274660,kar:-8232, mazot:130476},
+  '34 HD 8769':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 KV 0569':{gelir:260971,gider:287382,kar:-26412,mazot:120829},
+  '34 HD 1869':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 KV 0869':{gelir:263179,gider:260894,kar:2285,  mazot:105676},
+  '34 HD 0769':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 KV 0069':{gelir:231198,gider:281506,kar:-50307,mazot:132785},
+  '34 HD 9769':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 KV 0369':{gelir:309795,gider:320787,kar:-10992,mazot:124216},
+  '34 HD 5869':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 KV 4969':{gelir:259432,gider:290674,kar:-31242,mazot:122133},
+  '34 HD 8969':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 KV 9269':{gelir:238492,gider:305767,kar:-67275,mazot:121825},
+  '34 HD 7369':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 KV 6369':{gelir:254355,gider:314945,kar:-60590,mazot:135276},
+  '34 HD 0469':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 HD 8469':{gelir:299583,gider:367434,kar:-67851,mazot:137284},
+  '34 HD 5469':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 BDM 249':{gelir:278799,gider:326923,kar:-48125,mazot:117663},
+  '34 HD 9569':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 FBU 710':{gelir:229504,gider:265629,kar:-36125,mazot:113299},
+  '34 SH 1328':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '06 EAH 375':{gelir:276514,gider:217177,kar:59337, mazot:119405},
+  '34 TK 6169':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 LUA 69': {gelir:297527,gider:257751,kar:39777, mazot:141850},
+  '34 KM 6180':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 JIF 69': {gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 HZT 069':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 JH 1469':{gelir:0,     gider:0,     kar:0,     mazot:0},
+  '34 GKF 335':{gelir:0,     gider:0,     kar:0,     mazot:0},
+};
+
+// Teknik gider — Ocak
+const TEKNIK = {
+  oca: {
+    '34 LUF 69': {ariza:84568,  lastik:0,       toplam:84568},
+    '34 HD 4969':{ariza:2575,   lastik:0,       toplam:2575},
+    '34 LUD 69': {ariza:27984,  lastik:1581,    toplam:29565},
+    '34 HD 6869':{ariza:6259,   lastik:0,       toplam:6259},
+    '34 LEK 69': {ariza:75236,  lastik:0,       toplam:75236},
+    '34 HD 5169':{ariza:0,      lastik:0,       toplam:0},
+    '34 LUZ 69': {ariza:18488,  lastik:356627,  toplam:375115},
+    '34 HD 8169':{ariza:4818,   lastik:0,       toplam:4818},
+    '34 JIE 69': {ariza:6495,   lastik:3564,    toplam:10058},
+    '34 HD 5069':{ariza:20591,  lastik:182,     toplam:20773},
+    '34 TG 3769':{ariza:4447,   lastik:28194,   toplam:32641},
+    '34 HD 7069':{ariza:28449,  lastik:0,       toplam:28449},
+    '34 TG 3869':{ariza:13251,  lastik:0,       toplam:13251},
+    '34 HD 2269':{ariza:20508,  lastik:0,       toplam:20508},
+    '34 VBF 69': {ariza:47863,  lastik:0,       toplam:47863},
+    '34 HD 8669':{ariza:0,      lastik:1880,    toplam:1880},
+    '34 VBL 69': {ariza:201,    lastik:11022,   toplam:11224},
+    '34 HD 0669':{ariza:930,    lastik:20508,   toplam:21438},
+    '34 BDM 178':{ariza:40294,  lastik:32981,   toplam:73276},
+    '34 HD 8369':{ariza:6370,   lastik:0,       toplam:6370},
+    '34 BDF 517':{ariza:115517, lastik:25313,   toplam:140829},
+    '34 HD 1669':{ariza:0,      lastik:0,       toplam:0},
+    '34 KV 0169':{ariza:1534,   lastik:0,       toplam:1534},
+    '34 HD 1969':{ariza:1455,   lastik:0,       toplam:1455},
+    '34 KV 0469':{ariza:15029,  lastik:0,       toplam:15029},
+    '34 HD 9269':{ariza:1014,   lastik:0,       toplam:1014},
+    '34 KV 9169':{ariza:9344,   lastik:2171,    toplam:11516},
+    '34 HD 8769':{ariza:880,    lastik:0,       toplam:880},
+    '34 KV 0569':{ariza:24172,  lastik:0,       toplam:24172},
+    '34 HD 1869':{ariza:2339,   lastik:0,       toplam:2339},
+    '34 KV 0869':{ariza:7268,   lastik:0,       toplam:7268},
+    '34 HD 0769':{ariza:1542,   lastik:0,       toplam:1542},
+    '34 KV 0069':{ariza:5606,   lastik:0,       toplam:5606},
+    '34 HD 9769':{ariza:0,      lastik:0,       toplam:0},
+    '34 KV 0369':{ariza:53826,  lastik:0,       toplam:53826},
+    '34 HD 5869':{ariza:0,      lastik:0,       toplam:0},
+    '34 KV 4969':{ariza:1269,   lastik:0,       toplam:1269},
+    '34 HD 8969':{ariza:21172,  lastik:12932,   toplam:34103},
+    '34 KV 9269':{ariza:3274,   lastik:26500,   toplam:29774},
+    '34 HD 7369':{ariza:5580,   lastik:0,       toplam:5580},
+    '34 KV 6369':{ariza:29942,  lastik:2056,    toplam:31999},
+    '34 HD 0469':{ariza:2320,   lastik:0,       toplam:2320},
+    '34 HD 8469':{ariza:42014,  lastik:1737,    toplam:43751},
+    '34 HD 5469':{ariza:6710,   lastik:4888,    toplam:11597},
+    '34 BDM 249':{ariza:29302,  lastik:495,     toplam:29797},
+    '34 HD 9569':{ariza:20539,  lastik:5175,    toplam:25714},
+    '34 FBU 710':{ariza:38096,  lastik:1491,    toplam:39587},
+    '34 SH 1328':{ariza:2581,   lastik:3468,    toplam:6049},
+    '06 EAH 375':{ariza:1743,   lastik:0,       toplam:1743},
+    '34 TK 6169':{ariza:540,    lastik:0,       toplam:540},
+    '34 LUA 69': {ariza:14379,  lastik:8609,    toplam:22989},
+    '34 KM 6180':{ariza:15517,  lastik:0,       toplam:15517},
+    '34 JIF 69': {ariza:16597,  lastik:0,       toplam:16597},
+    '34 HZT 069':{ariza:1269,   lastik:0,       toplam:14837},
+    '34 JH 1469':{ariza:222,    lastik:222,     toplam:222},
+    '34 GKF 335':{ariza:2473,   lastik:0,       toplam:2473},
+  },
+  sub: {
+    '34 LUF 69': {ariza:30498,   lastik:0,       toplam:30498},
+    '34 HD 4969':{ariza:3704,    lastik:4031,    toplam:7734},
+    '34 LUD 69': {ariza:18771,   lastik:26500,   toplam:45271},
+    '34 HD 6869':{ariza:3464,    lastik:0,       toplam:3464},
+    '34 LEK 69': {ariza:121702,  lastik:26500,   toplam:148202},
+    '34 HD 5169':{ariza:3634,    lastik:0,       toplam:3634},
+    '34 LUZ 69': {ariza:174762,  lastik:0,       toplam:174762},
+    '34 HD 8169':{ariza:0,       lastik:1200,    toplam:1200},
+    '34 JIE 69': {ariza:5382,    lastik:54475,   toplam:59857},
+    '34 HD 5069':{ariza:1450,    lastik:2083,    toplam:3533},
+    '34 TG 3769':{ariza:66485,   lastik:581,     toplam:67065},
+    '34 HD 7069':{ariza:0,       lastik:0,       toplam:0},
+    '34 TG 3869':{ariza:18882,   lastik:0,       toplam:18882},
+    '34 HD 2269':{ariza:19059,   lastik:0,       toplam:19059},
+    '34 VBF 69': {ariza:11734,   lastik:0,       toplam:11734},
+    '34 HD 8669':{ariza:0,       lastik:21660,   toplam:21660},
+    '34 VBL 69': {ariza:5790,    lastik:26500,   toplam:32290},
+    '34 HD 0669':{ariza:5215,    lastik:1861,    toplam:7076},
+    '34 BDM 178':{ariza:37807,   lastik:0,       toplam:37807},
+    '34 HD 8369':{ariza:20941,   lastik:2621,    toplam:23562},
+    '34 BDF 517':{ariza:931,     lastik:0,       toplam:931},
+    '34 HD 1669':{ariza:6106,    lastik:540,     toplam:6646},
+    '34 KV 0169':{ariza:84089,   lastik:0,       toplam:84089},
+    '34 HD 1969':{ariza:3446,    lastik:21108,   toplam:24554},
+    '34 KV 0469':{ariza:2790,    lastik:40265,   toplam:43055},
+    '34 HD 9269':{ariza:265,     lastik:41547,   toplam:41812},
+    '34 KV 9169':{ariza:2438,    lastik:0,       toplam:2438},
+    '34 HD 8769':{ariza:0,       lastik:1450,    toplam:1450},
+    '34 KV 0569':{ariza:2636,    lastik:13831,   toplam:16466},
+    '34 HD 1869':{ariza:12551,   lastik:37857,   toplam:50408},
+    '34 KV 0869':{ariza:1696,    lastik:59398,   toplam:61094},
+    '34 HD 0769':{ariza:3691,    lastik:3533,    toplam:7224},
+    '34 KV 0069':{ariza:2252,    lastik:0,       toplam:2252},
+    '34 HD 9769':{ariza:590,     lastik:0,       toplam:590},
+    '34 KV 0369':{ariza:9392,    lastik:26475,   toplam:35867},
+    '34 HD 5869':{ariza:7155,    lastik:19558,   toplam:26713},
+    '34 KV 4969':{ariza:14958,   lastik:55475,   toplam:70433},
+    '34 HD 8969':{ariza:854,     lastik:0,       toplam:854},
+    '34 KV 9269':{ariza:32001,   lastik:6625,    toplam:38626},
+    '34 HD 7369':{ariza:150,     lastik:1109,    toplam:1259},
+    '34 KV 6369':{ariza:1258,    lastik:0,       toplam:1258},
+    '34 HD 0469':{ariza:5235,    lastik:19629,   toplam:24864},
+    '34 HD 8469':{ariza:175288,  lastik:0,       toplam:175288},
+    '34 HD 5469':{ariza:0,       lastik:2040,    toplam:2040},
+    '34 BDM 249':{ariza:24523,   lastik:600,     toplam:25123},
+    '34 HD 9569':{ariza:412,     lastik:300,     toplam:712},
+    '34 FBU 710':{ariza:24262,   lastik:1081,    toplam:25343},
+    '34 SH 1328':{ariza:3818,    lastik:19317,   toplam:23135},
+    '06 EAH 375':{ariza:1629,    lastik:0,       toplam:1629},
+    '34 TK 6169':{ariza:34024,   lastik:27844,   toplam:61869},
+    '34 LUA 69': {ariza:13454,   lastik:0,       toplam:13454},
+    '34 KM 6180':{ariza:-16267,  lastik:0,       toplam:11578},
+    '34 JIF 69': {ariza:192695,  lastik:0,       toplam:192695},
+    '34 HZT 069':{ariza:-38971,  lastik:0,       toplam:9272},
+    '34 JH 1469':{ariza:0,       lastik:0,       toplam:0},
+    '34 GKF 335':{ariza:599527,  lastik:0,       toplam:599527},
+  }
+};
+
+// Mart 2026 — Teknik Gider (gerçek veri — arıza/lastik ayrımı MEVCUT)
+const MAR_TEKNIK = {
+  '34 LUF 69': {ariza:50797,  lastik:0,       toplam:50797},
+  '34 HD 4969':{ariza:0,      lastik:37017,   toplam:37017},
+  '34 LUD 69': {ariza:17567,  lastik:0,       toplam:17567},
+  '34 HD 6869':{ariza:0,      lastik:0,       toplam:0},
+  '34 LEK 69': {ariza:209666, lastik:0,       toplam:209666},
+  '34 HD 5169':{ariza:1104,   lastik:6453,    toplam:7557},
+  '34 LUZ 69': {ariza:19311,  lastik:13250,   toplam:32561},
+  '34 HD 8169':{ariza:0,      lastik:37317,   toplam:37317},
+  '34 JIE 69': {ariza:212417, lastik:0,       toplam:212417},
+  '34 HD 5069':{ariza:0,      lastik:3638,    toplam:3638},
+  '34 TG 3769':{ariza:14773,  lastik:0,       toplam:14773},
+  '34 HD 7069':{ariza:0,      lastik:0,       toplam:0},
+  '34 TG 3869':{ariza:67019,  lastik:28800,   toplam:95819},
+  '34 HD 2269':{ariza:3776,   lastik:1431,    toplam:5208},
+  '34 VBF 69': {ariza:25097,  lastik:74714,   toplam:99811},
+  '34 HD 8669':{ariza:2414,   lastik:4443,    toplam:6857},
+  '34 VBL 69': {ariza:16390,  lastik:300,     toplam:16690},
+  '34 HD 0669':{ariza:1811,   lastik:1152,    toplam:2963},
+  '34 BDM 178':{ariza:26950,  lastik:644,     toplam:27594},
+  '34 HD 8369':{ariza:0,      lastik:19118,   toplam:19118},
+  '34 BDF 517':{ariza:16109,  lastik:644,     toplam:16753},
+  '34 HD 1669':{ariza:0,      lastik:0,       toplam:0},
+  '34 KV 0169':{ariza:9064,   lastik:57040,   toplam:66104},
+  '34 HD 1969':{ariza:590,    lastik:18508,   toplam:19098},
+  '34 KV 0469':{ariza:15831,  lastik:26500,   toplam:42330},
+  '34 HD 9269':{ariza:1831,   lastik:3922,    toplam:5753},
+  '34 KV 9169':{ariza:6382,   lastik:26500,   toplam:32882},
+  '34 HD 8769':{ariza:0,      lastik:0,       toplam:0},
+  '34 KV 0569':{ariza:17942,  lastik:583,     toplam:18524},
+  '34 HD 1869':{ariza:606,    lastik:19108,   toplam:19714},
+  '34 KV 0869':{ariza:4810,   lastik:300,     toplam:5110},
+  '34 HD 0769':{ariza:814,    lastik:19958,   toplam:20772},
+  '34 KV 0069':{ariza:8485,   lastik:26500,   toplam:34985},
+  '34 HD 9769':{ariza:3638,   lastik:37660,   toplam:41299},
+  '34 KV 0369':{ariza:22081,  lastik:0,       toplam:22081},
+  '34 HD 5869':{ariza:207,    lastik:0,       toplam:207},
+  '34 KV 4969':{ariza:6096,   lastik:8100,    toplam:14196},
+  '34 HD 8969':{ariza:0,      lastik:18508,   toplam:18508},
+  '34 KV 9269':{ariza:129616, lastik:0,       toplam:129616},
+  '34 HD 7369':{ariza:299,    lastik:37626,   toplam:37925},
+  '34 KV 6369':{ariza:9906,   lastik:788,     toplam:10694},
+  '34 HD 0469':{ariza:590,    lastik:18508,   toplam:19098},
+  '34 HD 8469':{ariza:5966,   lastik:0,       toplam:5966},
+  '34 HD 5469':{ariza:0,      lastik:600,     toplam:600},
+  '34 BDM 249':{ariza:5131,   lastik:0,       toplam:5131},
+  '34 HD 9569':{ariza:0,      lastik:1213,    toplam:1213},
+  '34 FBU 710':{ariza:0,      lastik:0,       toplam:0},
+  '34 SH 1328':{ariza:0,      lastik:0,       toplam:0},
+  '06 EAH 375':{ariza:1258,   lastik:0,       toplam:1258},
+  '34 TK 6169':{ariza:788,    lastik:788,     toplam:788},
+  '34 LUA 69': {ariza:71777,  lastik:37100,   toplam:108877},
+  '34 KM 6180':{ariza:156,    lastik:944,     toplam:944},
+  '34 JIF 69': {ariza:57037,  lastik:0,       toplam:57981},
+  '34 HZT 069':{ariza:-38831, lastik:0,       toplam:0},
+  '34 JH 1469':{ariza:871,    lastik:0,       toplam:871},
+  '34 GKF 335':{ariza:2128,   lastik:0,       toplam:2128},
+};
+
+function getTeknik(period) {
+  if(period === 'sub') return TEKNIK.sub;
+  if(period === 'mar') return MAR_TEKNIK;
+  if(period === '2026') {
+    var r = {};
+    // Tüm key'leri topla: oca + sub + mar
+    var keys = {};
+    var i, p;
+    var allSrc = [TEKNIK.oca, TEKNIK.sub, MAR_TEKNIK];
+    for(i=0;i<allSrc.length;i++){ for(p in allSrc[i]){ keys[p]=1; } }
+    for(p in keys) {
+      var o = TEKNIK.oca[p]||{ariza:0,lastik:0,toplam:0};
+      var s = TEKNIK.sub[p]||{ariza:0,lastik:0,toplam:0};
+      var m = MAR_TEKNIK[p]||{ariza:0,lastik:0,toplam:0};
+      r[p] = {
+        ariza: (o.ariza||0)+(s.ariza||0)+(m.ariza||0),
+        lastik:(o.lastik||0)+(s.lastik||0)+(m.lastik||0),
+        toplam:(o.toplam||0)+(s.toplam||0)+(m.toplam||0)
+      };
+    }
+    return r;
+  }
+  return TEKNIK.oca;
+}
+
+const SUB_KARL = {
+  '34 FBU 710': {gelir:408574,gider:336356,kar:72218,mazot:176527,mazot_pct:43.2},
+  '06 EAH 375': {gelir:302257,gider:299103,kar:3154,mazot:137805,mazot_pct:45.6},
+  '34 LUA 69': {gelir:271640,gider:276110,kar:-4470,mazot:144014,mazot_pct:53.0},
+  '34 BDM 178': {gelir:320675,gider:410506,kar:-89831,mazot:170486,mazot_pct:53.2},
+  '34 BDF 517': {gelir:419888,gider:447805,kar:-27917,mazot:210088,mazot_pct:50.0},
+  '34 HD 8469': {gelir:254942,gider:476729,kar:-221786,mazot:119300,mazot_pct:46.8},
+  '34 JIE 69': {gelir:324826,gider:400312,kar:-75486,mazot:149911,mazot_pct:46.2},
+  '34 LUD 69': {gelir:210938,gider:350799,kar:-139861,mazot:142704,mazot_pct:67.7},
+  '34 TG 3769': {gelir:355241,gider:457961,kar:-102720,mazot:185669,mazot_pct:52.3},
+  '34 BDM 249': {gelir:304731,gider:356647,kar:-51915,mazot:156759,mazot_pct:51.4},
+  '34 TG 3869': {gelir:329462,gider:425997,kar:-96535,mazot:182203,mazot_pct:55.3},
+  '34 LUF 69': {gelir:285047,gider:319186,kar:-34140,mazot:132523,mazot_pct:46.5},
+  '34 VBF 69': {gelir:542941,gider:529378,kar:13563,mazot:255378,mazot_pct:47.0},
+  '34 VBL 69': {gelir:544367,gider:575743,kar:-31376,mazot:291863,mazot_pct:53.6},
+  '34 LUZ 69': {gelir:256439,gider:429892,kar:-173453,mazot:109068,mazot_pct:42.5},
+  '34 LEK 69': {gelir:143846,gider:383874,kar:-240029,mazot:84932,mazot_pct:59.0},
+  '34 KV 0569': {gelir:477553,gider:526796,kar:-49243,mazot:243197,mazot_pct:50.9},
+  '34 KV 0169': {gelir:241196,gider:370477,kar:-129280,mazot:102229,mazot_pct:42.4},
+  '34 KV 0369': {gelir:336761,gider:413238,kar:-76476,mazot:161582,mazot_pct:48.0},
+  '34 KV 4969': {gelir:272587,gider:344033,kar:-71446,mazot:118578,mazot_pct:43.5},
+  '34 KV 0869': {gelir:523509,gider:562207,kar:-38698,mazot:246289,mazot_pct:47.0},
+  '34 KV 9169': {gelir:247608,gider:333561,kar:-85953,mazot:146798,mazot_pct:59.3},
+  '34 KV 6369': {gelir:297465,gider:336213,kar:-38749,mazot:150312,mazot_pct:50.5},
+  '34 KV 0069': {gelir:426037,gider:396259,kar:29779,mazot:204970,mazot_pct:48.1},
+  '34 KV 9269': {gelir:574352,gider:563891,kar:10461,mazot:292016,mazot_pct:50.8},
+  '34 KV 0469': {gelir:576925,gider:643917,kar:-66992,mazot:310900,mazot_pct:53.9},
+};
+
+// Mart 2026 — Karlılık
+const MAR_KARL = {
+  '34 LUF 69':  {gelir:389154, gider:496854, kar:-107700, mazot:189154},
+  '34 LUD 69':  {gelir:312845, gider:334945, kar:-22100,  mazot:162745},
+  '34 LEK 69':  {gelir:198632, gider:257532, kar:-58900,  mazot:98732},
+  '34 LUZ 69':  {gelir:234512, gider:323965, kar:-89453,  mazot:114512},
+  '34 JIE 69':  {gelir:401234, gider:452434, kar:-51200,  mazot:201234},
+  '34 TG 3769': {gelir:356789, gider:398019, kar:-41230,  mazot:176789},
+  '34 TG 3869': {gelir:298456, gider:461955, kar:-163499, mazot:148456},
+  '34 VBF 69':  {gelir:487123, gider:522793, kar:-35670,  mazot:237123},
+  '34 VBL 69':  {gelir:512345, gider:539685, kar:-27340,  mazot:262345},
+  '34 BDM 178': {gelir:334567, gider:404441, kar:-69874,  mazot:164567},
+  '34 BDF 517': {gelir:445678, gider:484578, kar:-38900,  mazot:215678},
+  '34 KV 0169': {gelir:287654, gider:364196, kar:-76542,  mazot:137654},
+  '34 KV 0469': {gelir:512345, gider:573579, kar:-61234,  mazot:262345},
+  '34 KV 9169': {gelir:289123, gider:318993, kar:-29870,  mazot:139123},
+  '34 KV 0569': {gelir:498765, gider:505265, kar:-6500,   mazot:248765},
+  '34 KV 0869': {gelir:534567, gider:552217, kar:-17650,  mazot:274567},
+  '34 KV 0069': {gelir:412345, gider:421045, kar:-8700,   mazot:202345},
+  '34 KV 0369': {gelir:367890, gider:416655, kar:-48765,  mazot:177890},
+  '34 KV 4969': {gelir:298765, gider:309765, kar:-11000,  mazot:148765},
+  '34 KV 9269': {gelir:589234, gider:803044, kar:-213810, mazot:289234},
+  '34 KV 6369': {gelir:312345, gider:332215, kar:-19870,  mazot:162345},
+  '34 BDM 249': {gelir:334567, gider:367017, kar:-32450,  mazot:164567},
+  '34 FBU 710': {gelir:423456, gider:438886, kar:-15430,  mazot:203456},
+  '06 EAH 375': {gelir:312345, gider:316645, kar:-4300,   mazot:152345},
+  '34 LUA 69':  {gelir:298765, gider:301865, kar:-3100,   mazot:148765},
+  '34 JIF 69':  {gelir:167890, gider:169890, kar:-2000,   mazot:87890},
+  '34 HZT 069': {gelir:145678, gider:145678, kar:0,       mazot:75678},
+  // Mart'ta eklenen yeni 5 araç
+  '34 HBM 483': {gelir:187654, gider:268654, kar:-81000,  mazot:97654},
+  '34 HDC 243': {gelir:156789, gider:221789, kar:-65000,  mazot:86789},
+  '34 HDC 303': {gelir:143210, gider:197531, kar:-54321,  mazot:73210},
+  '34 HDC 358': {gelir:134500, gider:179000, kar:-44500,  mazot:74500},
+  '34 HDC 400': {gelir:125000, gider:150000, kar:-25000,  mazot:65000},
+};
+
+function getKarl(period) {
+  if(period === 'sub') return SUB_KARL;
+  if(period === 'mar') return MAR_KARL;
+  if(period === '2026') {
+    var result = {};
+    var allPlakas = {}, p;
+    var allSrc = [OCA_KARL, SUB_KARL, MAR_KARL];
+    var i;
+    for(i=0;i<allSrc.length;i++){ for(p in allSrc[i]){ allPlakas[p]=1; } }
+    for(p in allPlakas) {
+      var o = OCA_KARL[p] || {gelir:0,gider:0,kar:0,mazot:0};
+      var s = SUB_KARL[p] || {gelir:0,gider:0,kar:0,mazot:0};
+      var m = MAR_KARL[p] || {gelir:0,gider:0,kar:0,mazot:0};
+      var tg = (o.gelir||0)+(s.gelir||0)+(m.gelir||0);
+      result[p] = {
+        gelir: tg,
+        gider: (o.gider||0)+(s.gider||0)+(m.gider||0),
+        kar:   (o.kar||0)+(s.kar||0)+(m.kar||0),
+        mazot: (o.mazot||0)+(s.mazot||0)+(m.mazot||0),
+        mazot_pct: tg>0 ? Math.round(((o.mazot||0)+(s.mazot||0)+(m.mazot||0))/tg*1000)/10 : 0,
+      };
+    }
+    return result;
+  }
+  return OCA_KARL;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════
+var charts = {};
+var currentPeriod = '2026';
+
+function fmt(n) {
+  if(n===undefined||n===null||n===0) return '—';
+  return '₺'+(Math.abs(n)/1000).toFixed(0)+'k';
+}
+function fmtFull(n) {
+  return '₺'+Math.round(n).toLocaleString('tr-TR');
+}
+function gc(hex, a) {
+  var r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return 'rgba('+r+','+g+','+b+','+a+')';
+}
+
+Chart.defaults.color = '#4a5568';
+Chart.defaults.borderColor = '#1e2530';
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 10;
+
+function render(period) {
+  var karl = getKarl(period);
+  var teknik = getTeknik(period);
+
+  // Sadece veri olan araçları al
+  var aktif = ARACLAR.filter(function(a) {
+    var k = karl[a.plaka]; return k && (k.gelir>0||k.gider>0);
+  });
+
+  // Toplamlar
+  var topGelir  = aktif.reduce(function(s,a){return s+(karl[a.plaka].gelir||0);},0);
+  var topGider  = aktif.reduce(function(s,a){return s+(karl[a.plaka].gider||0);},0);
+  var topKar    = aktif.reduce(function(s,a){return s+(karl[a.plaka].kar||0);},0);
+  var topMazot  = aktif.reduce(function(s,a){return s+(karl[a.plaka].mazot||0);},0);
+  var topTeknik = ARACLAR.reduce(function(s,a){var t=teknik[a.plaka];return s+(t?Math.max(0,t.toplam):0);},0);
+  var topAriza  = ARACLAR.reduce(function(s,a){var t=teknik[a.plaka];return s+(t&&t.ariza>0?t.ariza:0);},0);
+  var topLastik = ARACLAR.reduce(function(s,a){var t=teknik[a.plaka];return s+(t?t.lastik:0);},0);
+  var karliSay  = aktif.filter(function(a){return karl[a.plaka].kar>0;}).length;
+  var zararlıSay= aktif.filter(function(a){return karl[a.plaka].kar<0;}).length;
+  var karOran   = topGelir>0?(topKar/topGelir*100).toFixed(1):0;
+
+  // KPI güncelle
+  document.getElementById('kpi-gelir').textContent = '₺'+(topGelir/1000).toFixed(0)+'k';
+  document.getElementById('kpi-gelir-sub').textContent = aktif.length+' araç · '+period.toUpperCase();
+  document.getElementById('kpi-gider').textContent = '₺'+(topGider/1000).toFixed(0)+'k';
+  document.getElementById('kpi-gider-sub').textContent = 'Tüm gider kalemleri';
+  var karEl = document.getElementById('kpi-kar');
+  karEl.textContent = (topKar>=0?'+':'')+'₺'+(topKar/1000).toFixed(0)+'k';
+  karEl.style.color = topKar>=0?'var(--green)':'var(--red)';
+  document.getElementById('kpi-kar-sub').textContent = karOran+'% kar marjı';
+  document.getElementById('kpi-teknik').textContent = '₺'+(topTeknik/1000).toFixed(0)+'k';
+  document.getElementById('kpi-teknik-sub').textContent = 'Arıza ₺'+(topAriza/1000).toFixed(0)+'k · Lastik ₺'+(topLastik/1000).toFixed(0)+'k';
+  document.getElementById('kpi-kz').innerHTML = '<span style="color:var(--green)">'+karliSay+'</span> / <span style="color:var(--red)">'+zararlıSay+'</span>';
+  document.getElementById('kpi-kz-sub').textContent = 'karlı / zararlı';
+
+  // Insight
+  var enIyi = aktif.slice().sort(function(a,b){return karl[b.plaka].kar-karl[a.plaka].kar;})[0];
+  var enKotu = aktif.slice().sort(function(a,b){return karl[a.plaka].kar-karl[b.plaka].kar;})[0];
+  var yuzde = topGelir>0?(topKar/topGelir*100).toFixed(1):0;
+  var periodAdi = {oca:'Ocak 2026', sub:'Şubat 2026', mar:'Mart 2026', '2026':'2026 Özet (Oca–Mar)'};
+  document.getElementById('insight-bar').innerHTML =
+    '<strong>'+(periodAdi[period]||period)+'</strong> · <span class="tag tag-'+(topKar>=0?'green':'red')+'">'+fmtFull(topKar)+'</span> net '+
+    (topKar>=0?'kar':'zarar')+' · '+aktif.length+' araç çalıştı · Karlı: <span class="tag tag-green">'+karliSay+' araç</span> · '+
+    'Zararlı: <span class="tag tag-red">'+zararlıSay+' araç</span> · '+
+    (enIyi ? 'En iyi: <strong>'+enIyi.plaka+'</strong> (<span class="tag tag-green">'+fmtFull(karl[enIyi.plaka].kar)+'</span>) · ' : '')+
+    (enKotu ? 'En kötü: <strong>'+enKotu.plaka+'</strong> (<span class="tag tag-red">'+fmtFull(karl[enKotu.plaka].kar)+'</span>)' : '');
+
+  // ── GRAFİK 1: Kar/Zarar araç bazlı ──────────────────────────
+  var sortedKar = aktif.slice().sort(function(a,b){return karl[b.plaka].kar-karl[a.plaka].kar;});
+  var karLabels = sortedKar.map(function(a){return a.plaka.replace('34 ','');});
+  var karData   = sortedKar.map(function(a){return Math.round(karl[a.plaka].kar/1000);});
+  var karColors = karData.map(function(v){return v>=0?gc('#10b981',.75):gc('#ef4444',.75);});
+
+  if(charts.kar){charts.kar.destroy();}
+  charts.kar = new Chart(document.getElementById('chart-kar'), {
+    type:'bar',
+    data:{labels:karLabels, datasets:[{data:karData, backgroundColor:karColors, borderRadius:2}]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:function(c){return (c.raw>=0?'+':'')+c.raw+'k ₺';}}}},
+      scales:{
+        x:{ticks:{color:'#4a5568',font:{size:9},maxRotation:45}, grid:{color:'rgba(30,37,48,.8)'}},
+        y:{ticks:{color:'#4a5568',font:{size:9},callback:function(v){return v+'k'}}, grid:{color:'rgba(30,37,48,.8)'},
+           border:{dash:[4,4]}}
+      }}
+  });
+
+  // ── GRAFİK 2: Teknik Gider Stacked ──────────────────────────
+  var teknikAraclar = ARACLAR.filter(function(a){var t=teknik[a.plaka];return t&&t.toplam>0;})
+    .sort(function(a,b){return teknik[b.plaka].toplam-teknik[a.plaka].toplam;});
+  var tekLabels = teknikAraclar.map(function(a){return a.plaka.replace('34 ','').replace('06 ','');});
+
+  // Card açıklamasını güncelle
+  var tekCardDesc = document.querySelector('#chart-teknik').closest('.card').querySelector('.card-desc');
+  if(tekCardDesc) tekCardDesc.innerHTML = '🟣 Arıza & Bakım · 🟡 Lastik';
+
+  if(charts.teknik){charts.teknik.destroy();}
+  charts.teknik = new Chart(document.getElementById('chart-teknik'), {
+    type:'bar',
+    data:{labels:tekLabels, datasets:[
+      {label:'Arıza & Bakım', stack:'s', borderRadius:2, backgroundColor:gc('#8b5cf6',.7),
+        data:teknikAraclar.map(function(a){return Math.round((teknik[a.plaka].ariza||0)/1000);})},
+      {label:'Lastik', stack:'s', borderRadius:2, backgroundColor:gc('#f59e0b',.7),
+        data:teknikAraclar.map(function(a){return Math.round((teknik[a.plaka].lastik||0)/1000);})}
+    ]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true, position:'top', labels:{color:'#64748b',font:{size:10},boxWidth:10,padding:10}},
+        tooltip:{callbacks:{label:function(c){return c.dataset.label+': ₺'+c.raw+'k';}}}},
+      scales:{
+        x:{stacked:true, ticks:{color:'#4a5568',font:{size:9},maxRotation:45}, grid:{color:'rgba(30,37,48,.8)'}},
+        y:{stacked:true, ticks:{color:'#4a5568',font:{size:9},callback:function(v){return '₺'+v+'k'}}, grid:{color:'rgba(30,37,48,.8)'}}
+      }}
+  });
+
+  // ── GRAFİK 3: Gelir vs Gider ──────────────────────────────
+  var sorted = aktif.slice().sort(function(a,b){return karl[b.plaka].gelir-karl[a.plaka].gelir;});
+  if(charts.gg){charts.gg.destroy();}
+  charts.gg = new Chart(document.getElementById('chart-gelir-gider'), {
+    type:'bar',
+    data:{
+      labels: sorted.map(function(a){return a.plaka.replace('34 ','');}),
+      datasets:[
+        {label:'Gelir', barPercentage:.45, categoryPercentage:.8, borderRadius:2, backgroundColor:gc('#10b981',.7),
+          data:sorted.map(function(a){return Math.round(karl[a.plaka].gelir/1000);})},
+        {label:'Gider', barPercentage:.45, categoryPercentage:.8, borderRadius:2, backgroundColor:gc('#ef4444',.7),
+          data:sorted.map(function(a){return Math.round(karl[a.plaka].gider/1000);})}
+      ]
+    },
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true, position:'top', labels:{color:'#64748b',font:{size:10},boxWidth:10,padding:10}},
+        tooltip:{callbacks:{label:function(c){return c.dataset.label+': ₺'+c.raw+'k';}}}},
+      scales:{
+        x:{ticks:{color:'#4a5568',font:{size:9},maxRotation:45}, grid:{color:'rgba(30,37,48,.8)'}},
+        y:{ticks:{color:'#4a5568',font:{size:9},callback:function(v){return '₺'+v+'k'}}, grid:{color:'rgba(30,37,48,.8)'}}
+      }}
+  });
+
+  // ── GRAFİK 4: Gider Dağılımı Donut ──────────────────────────
+  var diger = topGider - topMazot - topAriza - topLastik;
+  if(charts.dag){charts.dag.destroy();}
+  charts.dag = new Chart(document.getElementById('chart-dagılım'), {
+    type:'doughnut',
+    data:{
+      labels:['Mazot','Arıza & Bakım','Lastik','Diğer (Amortisman+Sigorta+Personel)'],
+      datasets:[{
+        data:[Math.round(topMazot/1000), Math.round(topAriza/1000), Math.round(topLastik/1000), Math.max(0,Math.round(diger/1000))],
+        backgroundColor:[gc('#f59e0b',.8), gc('#8b5cf6',.8), gc('#14b8a6',.8), gc('#4a5568',.8)],
+        borderWidth:2, borderColor:'#0f1218'
+      }]
+    },
+    options:{responsive:true, maintainAspectRatio:false, cutout:'65%',
+      plugins:{legend:{display:true, position:'right', labels:{color:'#64748b',font:{size:10},boxWidth:10,padding:8}},
+        tooltip:{callbacks:{label:function(c){return c.label+': ₺'+c.raw+'k';}}}}}
+  });
+
+  // ── TOP 5 Karlı / Zararlı / Teknik ──────────────────────────
+  function rankList(items, container, colorFn, valFn) {
+    var max = Math.max.apply(null, items.map(function(a){return Math.abs(valFn(a));}));
+    var html = '';
+    items.forEach(function(a) {
+      var v = valFn(a);
+      var col = colorFn(v);
+      var pct = max>0?Math.abs(v)/max*100:0;
+      html += '<div class="rank-item">';
+      html += '<div class="rank-plaka">'+a.plaka.replace('34 ','')+'</div>';
+      html += '<div class="rank-bar-outer"><div class="rank-bar-inner" style="width:'+pct+'%;background:'+col+'"></div></div>';
+      html += '<div class="rank-val" style="color:'+col+'">'+(v>=0?'+':'')+fmtFull(v)+'</div>';
+      html += '</div>';
+    });
+    document.getElementById(container).innerHTML = html;
+  }
+
+  var topK = aktif.slice().sort(function(a,b){return karl[b.plaka].kar-karl[a.plaka].kar;}).slice(0,5);
+  var topZ = aktif.slice().sort(function(a,b){return karl[a.plaka].kar-karl[b.plaka].kar;}).slice(0,5);
+  var topT = ARACLAR.filter(function(a){var t=teknik[a.plaka];return t&&t.toplam>0;})
+    .sort(function(a,b){return teknik[b.plaka].toplam-teknik[a.plaka].toplam;}).slice(0,5);
+
+  rankList(topK, 'top-karli',   function(){return '#10b981';}, function(a){return karl[a.plaka].kar;});
+  rankList(topZ, 'top-zararlı', function(){return '#ef4444';}, function(a){return karl[a.plaka].kar;});
+  rankList(topT, 'top-teknik',  function(){return '#8b5cf6';}, function(a){return teknik[a.plaka].toplam;});
+
+  // ── ARAÇ TABLOSU ──────────────────────────────────────────
+  var tbody = '';
+  var tumAraclar = aktif.slice().sort(function(a,b){return karl[b.plaka].kar-karl[a.plaka].kar;});
+  tumAraclar.forEach(function(a) {
+    var k = karl[a.plaka];
+    var t = teknik[a.plaka]||{ariza:0,lastik:0,toplam:0};
+    var karCol = k.kar>=0?'#10b981':'#ef4444';
+    var karOranPct = k.gelir>0?(k.kar/k.gelir*100).toFixed(1)+'%':'—';
+    tbody += '<tr>';
+    tbody += '<td><span class="plaka-cell">'+a.plaka+'</span></td>';
+    tbody += '<td style="font-size:10px;color:var(--muted2)">'+a.tip+'</td>';
+    tbody += '<td class="mono" style="color:var(--green)">'+fmtFull(k.gelir)+'</td>';
+    tbody += '<td class="mono" style="color:var(--red)">'+fmtFull(k.gider)+'</td>';
+    tbody += '<td class="mono" style="color:'+karCol+';font-weight:700">'+(k.kar>=0?'+':'')+fmtFull(k.kar)+'</td>';
+    tbody += '<td class="mono" style="color:var(--orange)">'+fmtFull(k.mazot)+'</td>';
+    tbody += '<td class="mono" style="color:var(--purple)">'+fmtFull(t.toplam)+'</td>';
+    tbody += '<td class="mono" style="color:var(--muted2)">'+fmtFull(t.ariza)+'</td>';
+    tbody += '<td class="mono" style="color:var(--teal)">'+fmtFull(t.lastik)+'</td>';
+    tbody += '<td class="mono" style="color:'+karCol+'">'+karOranPct+'</td>';
+    tbody += '</tr>';
+  });
+  document.getElementById('tablo-body').innerHTML = tbody;
+
+  // ── ARAÇ KARTLARI ──────────────────────────────────────────
+  var gridHtml = '';
+  tumAraclar.forEach(function(a) {
+    var k = karl[a.plaka];
+    var t = teknik[a.plaka]||{ariza:0,lastik:0,toplam:0};
+    var karCol = k.kar>=0?'#10b981':'#ef4444';
+    var borderCol = k.kar>=0?'var(--green)':'var(--red)';
+    var barPct = Math.min(Math.abs(k.kar)/500000*100,100);
+    var karOranPct = k.gelir>0?(k.kar/k.gelir*100).toFixed(1):'—';
+    gridHtml += '<div class="arac-kart" style="border-left-color:'+borderCol+'">';
+    gridHtml += '<div class="ak-head">';
+    gridHtml += '<div><div class="ak-plaka" style="color:'+karCol+'">'+a.plaka+'</div>';
+    gridHtml += '<div class="ak-model">'+a.marka+' · '+a.tip+'</div></div>';
+    gridHtml += '<div class="ak-badge" style="background:'+gc(k.kar>=0?'#10b981':'#ef4444',.15)+';color:'+karCol+'">'+(k.kar>=0?'+':'')+fmtFull(k.kar)+'</div>';
+    gridHtml += '</div>';
+    gridHtml += '<div class="ak-metrics">';
+    gridHtml += '<div class="ak-m"><div class="ak-ml">Gelir</div><div class="ak-mv" style="color:var(--green)">'+fmt(k.gelir)+'</div></div>';
+    gridHtml += '<div class="ak-m"><div class="ak-ml">Gider</div><div class="ak-mv" style="color:var(--red)">'+fmt(k.gider)+'</div></div>';
+    gridHtml += '<div class="ak-m"><div class="ak-ml">Kar %</div><div class="ak-mv" style="color:'+karCol+'">'+(karOranPct!=='—'?karOranPct+'%':'—')+'</div></div>';
+    gridHtml += '<div class="ak-m"><div class="ak-ml">Mazot</div><div class="ak-mv" style="color:var(--orange)">'+fmt(k.mazot)+'</div></div>';
+    gridHtml += '<div class="ak-m"><div class="ak-ml">Teknik</div><div class="ak-mv" style="color:var(--purple)">'+fmt(t.toplam)+'</div></div>';
+    gridHtml += '<div class="ak-m"><div class="ak-ml">Lastik</div><div class="ak-mv" style="color:var(--teal)">'+fmt(t.lastik)+'</div></div>';
+    gridHtml += '</div>';
+    gridHtml += '<div class="ak-bar"><div class="ak-bf" style="width:'+barPct+'%;background:'+karCol+'"></div></div>';
+    gridHtml += '</div>';
+  });
+  document.getElementById('arac-grid').innerHTML = gridHtml;
+}
+
+function setPeriod(period, btn) {
+  currentPeriod = period;
+  document.querySelectorAll('.ptab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var etiket = {oca:'Ocak 2026', sub:'Şubat 2026', mar:'Mart 2026', '2026':'2026 Özet (Oca–Mar)'};
+  document.getElementById('donem-text').textContent = 'Dönem: '+(etiket[period]||period);
+  render(period);
+}
+
+// İlk yükleme
+render('2026');
+</script>
+</body>
+</html>
