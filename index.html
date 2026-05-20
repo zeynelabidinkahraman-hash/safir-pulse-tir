@@ -445,52 +445,6 @@ body {
     </div>
   </div>
 
-  <!-- YAKIT TÜKETİMİ SATIRI: Araç bazlı litre + Aylık litre trend -->
-  <div class="g21" id="yakıt-row">
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-title">⛽ Yakıt Tüketimi — Araç Bazlı</div>
-          <div class="card-desc" id="yakıt-chart-desc">Toplam litre · Sıralama</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="chart-wrap" style="height:280px">
-          <canvas id="chart-litre"></canvas>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <div>
-          <div class="card-title">📊 Aylık Yakıt Trendi</div>
-          <div class="card-desc">Filo toplam litre tüketimi · Ocak–Nisan 2026</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="chart-wrap" style="height:130px">
-          <canvas id="chart-litre-trend"></canvas>
-        </div>
-        <div id="yakıt-kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- L/100KM VERİMLİLİK SATIRI -->
-  <div class="card" id="verimlilik-row">
-    <div class="card-header">
-      <div>
-        <div class="card-title">🔢 Yakıt Verimliliği — L/100km</div>
-        <div class="card-desc" id="verimlilik-desc">Araç bazlı · Düşük = verimli · Yüksek = verimsiz</div>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="chart-wrap" style="height:260px">
-        <canvas id="chart-l100km"></canvas>
-      </div>
-    </div>
-  </div>
-
   <!-- SATIR 1: Kar/Zarar grafik + Teknik Gider stacked -->
   <div class="g21">
     <div class="card">
@@ -570,6 +524,52 @@ body {
         <div class="card-title">🔧 En Yüksek Teknik Gider</div>
       </div>
       <div class="card-body" id="top-teknik"></div>
+    </div>
+  </div>
+
+  <!-- YAKIT TÜKETİMİ SATIRI: Araç bazlı litre + Aylık litre trend -->
+  <div class="g21" id="yakıt-row">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">⛽ Yakıt Tüketimi — Araç Bazlı</div>
+          <div class="card-desc" id="yakıt-chart-desc">Toplam litre · Sıralama</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:280px">
+          <canvas id="chart-litre"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">📊 Aylık Yakıt Trendi</div>
+          <div class="card-desc">Filo toplam litre tüketimi · Ocak–Nisan 2026</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:130px">
+          <canvas id="chart-litre-trend"></canvas>
+        </div>
+        <div id="yakıt-kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- L/100KM VERİMLİLİK SATIRI -->
+  <div class="card" id="verimlilik-row">
+    <div class="card-header">
+      <div>
+        <div class="card-title">🔢 Yakıt Verimliliği — L/100km</div>
+        <div class="card-desc" id="verimlilik-desc">Araç bazlı · Düşük = verimli · Yüksek = verimsiz</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap" style="height:260px">
+        <canvas id="chart-l100km"></canvas>
+      </div>
     </div>
   </div>
 
