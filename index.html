@@ -383,10 +383,11 @@ body {
       <button class="ptab" onclick="setPeriod('mar',this)">Mart</button>
       <button class="ptab" onclick="setPeriod('nis',this)">Nisan</button>
       <button class="ptab" onclick="setPeriod('may',this)">Mayıs</button>
+      <button class="ptab" onclick="setPeriod('haz',this)">Haziran</button>
     </div>
     <div id="donem-text">Dönem: 2026 Özet</div>
   </div>
-  <div class="header-right">Son güncelleme: Mayıs 2026</div>
+  <div class="header-right">Son güncelleme: Haziran 2026</div>
 </div>
 
 <!-- KPI STRIP -->
@@ -434,7 +435,7 @@ body {
     <div class="card">
       <div class="card-header">
         <div>
-          <div class="card-title">📈 Aylık Trend — Ocak · Şubat · Mart · Nisan · Mayıs 2026</div>
+          <div class="card-title">📈 Aylık Trend — Ocak · Şubat · Mart · Nisan · Mayıs · Haziran 2026</div>
           <div class="card-desc">Filo toplam gelir / gider / net kar trendi (₺ bin)</div>
         </div>
       </div>
@@ -465,7 +466,7 @@ body {
       <div class="card-header">
         <div>
           <div class="card-title">📊 Aylık Yakıt Trendi</div>
-          <div class="card-desc">Filo toplam litre tüketimi · Ocak–Mayıs 2026</div>
+          <div class="card-desc">Filo toplam litre tüketimi · Ocak–Mayıs 2026 · Haziran litre bekleniyor</div>
         </div>
       </div>
       <div class="card-body">
@@ -938,17 +939,56 @@ const MAY_TEKNIK = {
   '34 HDC 400':{ariza:43713.75, lastik:16600.00, toplam:60313.75, not:''},
 };
 
+// Haziran 2026 — Teknik Gider (kaynak: HAFRİYAT KAMYONLARI → LASTİKSİZ ARIZA + LASTİK,
+//   çekici+dorse birleşik; karlılık ÖZET teknik toplamıyla çapraz doğrulandı, 31/31 tutuyor)
+const HAZ_TEKNIK = {
+  '34 LUF 69': {ariza:29521.07, lastik:8300.0, toplam:37821.07, not:''},
+  '34 LUD 69': {ariza:46283.93, lastik:15795.0, toplam:62078.93, not:''},
+  '34 LEK 69': {ariza:70164.49, lastik:17543.75, toplam:87708.24, not:''},
+  '34 LUZ 69': {ariza:41853.24, lastik:4443.75, toplam:46296.99, not:''},
+  '34 JIE 69': {ariza:86100.93, lastik:124655.43, toplam:210756.36, not:''},
+  '34 TG 3769': {ariza:45317.55, lastik:78988.0, toplam:124305.55, not:''},
+  '34 TG 3869': {ariza:258948.69, lastik:0.0, toplam:258948.69, not:'Devirdaim/conta/termostat/diferansiyel'},
+  '34 VBF 69': {ariza:22546.55, lastik:89060.0, toplam:111606.55, not:''},
+  '34 VBL 69': {ariza:65799.99, lastik:66618.25, toplam:132418.24, not:''},
+  '34 BDM 178': {ariza:189895.22, lastik:3887.5, toplam:193782.72, not:'Piston eğildi, şase düzeltme'},
+  '34 BDF 517': {ariza:119569.33, lastik:2112.7, toplam:121682.03, not:'Diferansiyel'},
+  '34 KV 0169': {ariza:130384.36, lastik:77124.25, toplam:207508.61, not:'Pleyt ve aküler değişti'},
+  '34 KV 0469': {ariza:28398.47, lastik:81716.7, toplam:110115.17, not:''},
+  '34 KV 9169': {ariza:12315.67, lastik:31590.0, toplam:43905.67, not:''},
+  '34 KV 0569': {ariza:42126.71, lastik:35333.75, toplam:77460.46, not:''},
+  '34 KV 0869': {ariza:110718.15, lastik:16750.25, toplam:127468.4, not:'Diferansiyel'},
+  '34 KV 0069': {ariza:13606.18, lastik:23177.8, toplam:36783.98, not:''},
+  '34 KV 0369': {ariza:18641.89, lastik:23787.5, toplam:42429.39, not:''},
+  '34 KV 4969': {ariza:10033.67, lastik:5331.2, toplam:15364.87, not:''},
+  '34 KV 9269': {ariza:51210.33, lastik:96453.75, toplam:147664.08, not:''},
+  '34 KV 6369': {ariza:3891.79, lastik:66348.5, toplam:70240.29, not:''},
+  '34 HD 8469': {ariza:68784.3, lastik:0.0, toplam:68784.3, not:'Çatal değişti'},
+  '34 BDM 249': {ariza:11445.95, lastik:65928.75, toplam:77374.7, not:''},
+  '34 HDC 243': {ariza:38700.17, lastik:37804.25, toplam:76504.42, not:''},
+  '34 HBM 483': {ariza:40804.96, lastik:4900.25, toplam:45705.21, not:''},
+  '34 HDC 303': {ariza:78583.65, lastik:74265.0, toplam:152848.65, not:'Alt merkez'},
+  '34 HDC 358': {ariza:142118.91, lastik:63795.25, toplam:205914.16, not:'Rod, alt merkez, pleyt yağlama, çamurluk değişimi'},
+  '34 HDC 400': {ariza:87691.95, lastik:35283.25, toplam:122975.2, not:'Baskı balata, çatal takımı'},
+  '34 JIF 69': {ariza:16.68, lastik:0.0, toplam:16.68, not:''},
+  '34 JH 1469': {ariza:0.0, lastik:0.0, toplam:0.0, not:''},
+  '34 FBU 710': {ariza:3294.11, lastik:0.0, toplam:3294.11, not:''},
+  '34 LUA 69': {ariza:33470.8, lastik:869.0, toplam:34339.8, not:''},
+  '06 EAH 375': {ariza:3562.45, lastik:869.0, toplam:4431.45, not:''},
+};
+
 function getTeknik(period) {
   if(period === 'sub') return TEKNIK.sub;
   if(period === 'mar') return MAR_TEKNIK;
   if(period === 'nis') return NIS_TEKNIK;
   if(period === 'may') return MAY_TEKNIK;
+  if(period === 'haz') return HAZ_TEKNIK;
   if(period === '2026') {
     var r = {};
     // Tüm key'leri topla: oca + sub + mar + nis + may
     var keys = {};
     var i, p;
-    var allSrc = [TEKNIK.oca, TEKNIK.sub, MAR_TEKNIK, NIS_TEKNIK, MAY_TEKNIK];
+    var allSrc = [TEKNIK.oca, TEKNIK.sub, MAR_TEKNIK, NIS_TEKNIK, MAY_TEKNIK, HAZ_TEKNIK];
     for(i=0;i<allSrc.length;i++){ for(p in allSrc[i]){ keys[p]=1; } }
     for(p in keys) {
       var o = TEKNIK.oca[p]||{ariza:0,lastik:0,toplam:0};
@@ -956,10 +996,11 @@ function getTeknik(period) {
       var m = MAR_TEKNIK[p]||{ariza:0,lastik:0,toplam:0};
       var n = NIS_TEKNIK[p]||{ariza:0,lastik:0,toplam:0};
       var y = MAY_TEKNIK[p]||{ariza:0,lastik:0,toplam:0};
+      var h = HAZ_TEKNIK[p]||{ariza:0,lastik:0,toplam:0};
       r[p] = {
-        ariza: (o.ariza||0)+(s.ariza||0)+(m.ariza||0)+(n.ariza||0)+(y.ariza||0),
-        lastik:(o.lastik||0)+(s.lastik||0)+(m.lastik||0)+(n.lastik||0)+(y.lastik||0),
-        toplam:(o.toplam||0)+(s.toplam||0)+(m.toplam||0)+(n.toplam||0)+(y.toplam||0)
+        ariza: (o.ariza||0)+(s.ariza||0)+(m.ariza||0)+(n.ariza||0)+(y.ariza||0)+(h.ariza||0),
+        lastik:(o.lastik||0)+(s.lastik||0)+(m.lastik||0)+(n.lastik||0)+(y.lastik||0)+(h.lastik||0),
+        toplam:(o.toplam||0)+(s.toplam||0)+(m.toplam||0)+(n.toplam||0)+(y.toplam||0)+(h.toplam||0)
       };
     }
     return r;
@@ -1267,6 +1308,7 @@ function getLitre(period) {
   if(period === 'mar') return MAR_LITRE;
   if(period === 'nis') return NIS_LITRE;
   if(period === 'may') return MAY_LITRE;
+  if(period === 'haz') return {};  // Haziran litre verisi bekleniyor
   if(period === '2026') {
     var r = {}, p, allSrc = [OCA_LITRE, SUB_LITRE, MAR_LITRE, NIS_LITRE, MAY_LITRE];
     for(var i=0;i<allSrc.length;i++){ for(p in allSrc[i]){ r[p]=(r[p]||0)+(allSrc[i][p]||0); } }
@@ -1287,6 +1329,7 @@ function getMazotFiyati(period) {
   if(period==='mar') return 52.42;  // 5,565,387 ₺ / 106,169 L
   if(period==='nis') return 59.86;  // 8,292,908 ₺ / 138,541 L
   if(period==='may') return 55.78;  // 6,190,507 ₺ / 110,982 L
+  if(period==='haz') return 54.58;  // Haziran litre bekleniyor — yıl ort.
   if(period==='2026') return 54.58; // yıl ort.
   return 50;
 }
@@ -1430,7 +1473,7 @@ const MAYIS_KM = {
   '34 JIE 69': 2334,   // 927 + 1.407 (2 cihaz)
   '34 LUZ 69': 5933,
   '34 LEK 69': 4859,
-  '34 LUD 69': 4347,
+  '34 LUD 69': 4347,   // cift cihaz toplami (onceki duzeltme korundu)
   '34 TG 3869': 7620,
   '34 KV 9269': 13193,
   '34 KV 0569': 9116,
@@ -1449,12 +1492,47 @@ const MAYIS_KM = {
   // 34 HBM 483 ve 34 HD 8469: Mayıs'ta hareket yok (0 km) → km listesinden çıkarıldı
 };
 
+const HAZIRAN_KM = {
+  '34 LUF 69': 6802,
+  '34 LUD 69': 6660,
+  '34 LEK 69': 3490,
+  '34 LUZ 69': 3688,
+  '34 JIE 69': 6247,
+  '34 TG 3769': 5107,
+  '34 TG 3869': 3543,
+  '34 VBF 69': 8799,
+  '34 VBL 69': 1405,
+  '34 BDM 178': 7081,
+  '34 BDF 517': 5632,
+  '34 KV 0169': 11963,
+  '34 KV 0469': 12892,
+  '34 KV 9169': 6521,
+  '34 KV 0569': 12969,
+  '34 KV 0869': 9348,
+  '34 KV 0069': 10091,
+  '34 KV 0369': 5574,
+  '34 KV 4969': 8177,
+  '34 KV 9269': 8563,
+  '34 KV 6369': 8172,
+  '34 HD 8469': 500,
+  '34 BDM 249': 6752,
+  '34 HDC 243': 15512,
+  '34 HBM 483': 7418,
+  '34 HDC 303': 7418,
+  '34 HDC 358': 1187,
+  '34 HDC 400': 5100,
+  '34 FBU 710': 468,
+  '34 LUA 69': 3867,
+  '06 EAH 375': 5396,
+};
+
 function getKM(period) {
   if(period === 'oca') return OCAK_KM;
   if(period === 'sub') return SUBAT_KM;
   if(period === 'mar') return MART_KM;
   if(period === 'nis') return NISAN_KM;
   if(period === 'may') return MAYIS_KM;
+  if(period === 'haz') return HAZIRAN_KM;
   if(period === '2026') {
     var r = {}, p;
     var allSrc = [OCAK_KM, SUBAT_KM, MART_KM, NISAN_KM, MAYIS_KM];
@@ -1464,15 +1542,51 @@ function getKM(period) {
   return OCAK_KM;
 }
 
+// Haziran 2026 — Karlılık (kaynak: HAZİRAN AYI ARAÇ KARLILIK.xls → ÖZET; 34 GH 0469 Excel hatası, hariç)
+const HAZ_KARL = {
+  '34 LUF 69': {gelir:421218,gider:414332,kar:6885,mazot:216818,mazot_pct:51.5},
+  '34 LUD 69': {gelir:352153,gider:409342,kar:-57189,mazot:187510,mazot_pct:53.2},
+  '34 LEK 69': {gelir:178448,gider:276990,kar:-98542,mazot:65488,mazot_pct:36.7},
+  '34 LUZ 69': {gelir:357868,gider:329639,kar:28229,mazot:139413,mazot_pct:39.0},
+  '34 JIE 69': {gelir:377582,gider:597446,kar:-219864,mazot:226235,mazot_pct:59.9},
+  '34 TG 3769': {gelir:266424,gider:401406,kar:-134982,mazot:150497,mazot_pct:56.5},
+  '34 TG 3869': {gelir:376094,gider:521844,kar:-145750,mazot:113864,mazot_pct:30.3},
+  '34 VBF 69': {gelir:544524,gider:511234,kar:33290,mazot:215900,mazot_pct:39.6},
+  '34 VBL 69': {gelir:651134,gider:589606,kar:61529,mazot:227800,mazot_pct:35.0},
+  '34 BDM 178': {gelir:436381,gider:529887,kar:-93506,mazot:177614,mazot_pct:40.7},
+  '34 BDF 517': {gelir:462558,gider:368503,kar:94055,mazot:95474,mazot_pct:20.6},
+  '34 KV 0169': {gelir:762435,gider:759698,kar:2737,mazot:341735,mazot_pct:44.8},
+  '34 KV 0469': {gelir:730490,gider:659605,kar:70885,mazot:313530,mazot_pct:42.9},
+  '34 KV 9169': {gelir:494418,gider:362650,kar:131768,mazot:163154,mazot_pct:33.0},
+  '34 KV 0569': {gelir:803932,gider:635585,kar:168347,mazot:324255,mazot_pct:40.3},
+  '34 KV 0869': {gelir:590887,gider:559675,kar:31212,mazot:242640,mazot_pct:41.1},
+  '34 KV 0069': {gelir:587935,gider:462631,kar:125304,mazot:234760,mazot_pct:39.9},
+  '34 KV 0369': {gelir:503424,gider:366903,kar:136521,mazot:163524,mazot_pct:32.5},
+  '34 KV 4969': {gelir:463435,gider:383884,kar:79551,mazot:208923,mazot_pct:45.1},
+  '34 KV 9269': {gelir:407906,gider:528625,kar:-120719,mazot:232108,mazot_pct:56.9},
+  '34 KV 6369': {gelir:451794,gider:466094,kar:-14300,mazot:234529,mazot_pct:51.9},
+  '34 HD 8469': {gelir:17331,gider:163560,kar:-146228,mazot:17133,mazot_pct:98.9},
+  '34 BDM 249': {gelir:397133,gider:434384,kar:-37251,mazot:210231,mazot_pct:52.9},
+  '34 HDC 243': {gelir:879843,gider:686266,kar:193577,mazot:377742,mazot_pct:42.9},
+  '34 HBM 483': {gelir:514232,gider:434634,kar:79599,mazot:221304,mazot_pct:43.0},
+  '34 HDC 303': {gelir:585132,gider:599240,kar:-14108,mazot:250824,mazot_pct:42.9},
+  '34 HDC 358': {gelir:672631,gider:751052,kar:-78421,mazot:340965,mazot_pct:50.7},
+  '34 HDC 400': {gelir:393625,gider:469670,kar:-76045,mazot:168464,mazot_pct:42.8},
+  '34 FBU 710': {gelir:10418,gider:123147,kar:-112729,mazot:12814,mazot_pct:123.0},
+  '34 LUA 69': {gelir:201021,gider:209422,kar:-8401,mazot:102998,mazot_pct:51.2},
+  '06 EAH 375': {gelir:248366,gider:267874,kar:-19508,mazot:149549,mazot_pct:60.2},
+};
+
 function getKarl(period) {
   if(period === 'sub') return SUB_KARL;
   if(period === 'mar') return MAR_KARL;
   if(period === 'nis') return NIS_KARL;
   if(period === 'may') return MAY_KARL;
+  if(period === 'haz') return HAZ_KARL;
   if(period === '2026') {
     var result = {};
     var allPlakas = {}, p;
-    var allSrc = [OCA_KARL, SUB_KARL, MAR_KARL, NIS_KARL, MAY_KARL];
+    var allSrc = [OCA_KARL, SUB_KARL, MAR_KARL, NIS_KARL, MAY_KARL, HAZ_KARL];
     var i;
     for(i=0;i<allSrc.length;i++){ for(p in allSrc[i]){ allPlakas[p]=1; } }
     for(p in allPlakas) {
@@ -1481,13 +1595,14 @@ function getKarl(period) {
       var m = MAR_KARL[p] || {gelir:0,gider:0,kar:0,mazot:0};
       var n = NIS_KARL[p] || {gelir:0,gider:0,kar:0,mazot:0};
       var y = MAY_KARL[p] || {gelir:0,gider:0,kar:0,mazot:0};
-      var tg = (o.gelir||0)+(s.gelir||0)+(m.gelir||0)+(n.gelir||0)+(y.gelir||0);
+      var h = HAZ_KARL[p] || {gelir:0,gider:0,kar:0,mazot:0};
+      var tg = (o.gelir||0)+(s.gelir||0)+(m.gelir||0)+(n.gelir||0)+(y.gelir||0)+(h.gelir||0);
       result[p] = {
         gelir: tg,
-        gider: (o.gider||0)+(s.gider||0)+(m.gider||0)+(n.gider||0)+(y.gider||0),
-        kar:   (o.kar||0)+(s.kar||0)+(m.kar||0)+(n.kar||0)+(y.kar||0),
-        mazot: (o.mazot||0)+(s.mazot||0)+(m.mazot||0)+(n.mazot||0)+(y.mazot||0),
-        mazot_pct: tg>0 ? Math.round(((o.mazot||0)+(s.mazot||0)+(m.mazot||0)+(n.mazot||0)+(y.mazot||0))/tg*1000)/10 : 0,
+        gider: (o.gider||0)+(s.gider||0)+(m.gider||0)+(n.gider||0)+(y.gider||0)+(h.gider||0),
+        kar:   (o.kar||0)+(s.kar||0)+(m.kar||0)+(n.kar||0)+(y.kar||0)+(h.kar||0),
+        mazot: (o.mazot||0)+(s.mazot||0)+(m.mazot||0)+(n.mazot||0)+(y.mazot||0)+(h.mazot||0),
+        mazot_pct: tg>0 ? Math.round(((o.mazot||0)+(s.mazot||0)+(m.mazot||0)+(n.mazot||0)+(y.mazot||0)+(h.mazot||0))/tg*1000)/10 : 0,
       };
     }
     return result;
@@ -1566,7 +1681,7 @@ function render(period) {
   var enIyi = aktif.slice().sort(function(a,b){return karl[b.plaka].kar-karl[a.plaka].kar;})[0];
   var enKotu = aktif.slice().sort(function(a,b){return karl[a.plaka].kar-karl[b.plaka].kar;})[0];
   var yuzde = topGelir>0?(topKar/topGelir*100).toFixed(1):0;
-  var periodAdi = {oca:'Ocak 2026', sub:'Şubat 2026', mar:'Mart 2026', nis:'Nisan 2026', may:'Mayıs 2026', '2026':'2026 Özet (Oca–May)'};
+  var periodAdi = {oca:'Ocak 2026', sub:'Şubat 2026', mar:'Mart 2026', nis:'Nisan 2026', may:'Mayıs 2026', haz:'Haziran 2026', '2026':'2026 Özet (Oca–Haz)'};
   document.getElementById('insight-bar').innerHTML =
     '<strong>'+(periodAdi[period]||period)+'</strong> · <span class="tag tag-'+(topKar>=0?'green':'red')+'">'+fmtFull(topKar)+'</span> net '+
     (topKar>=0?'kar':'zarar')+' · '+aktif.length+' araç çalıştı · Karlı: <span class="tag tag-green">'+karliSay+' araç</span> · '+
@@ -1592,20 +1707,21 @@ function render(period) {
     var tMar = ayToplam(MAR_KARL);
     var tNis = ayToplam(NIS_KARL);
     var tMay = ayToplam(MAY_KARL);
+    var tHaz = ayToplam(HAZ_KARL);
     if(charts.trend){charts.trend.destroy();}
     charts.trend = new Chart(document.getElementById('chart-trend'), {
       type:'line',
       data:{
-        labels:['Ocak','Şubat','Mart','Nisan','Mayıs'],
+        labels:['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran'],
         datasets:[
           {label:'Gelir (₺k)', borderColor:'#10b981', backgroundColor:gc('#10b981',.12),
-           data:[tOca.gelir, tSub.gelir, tMar.gelir, tNis.gelir, tMay.gelir], fill:true,
+           data:[tOca.gelir, tSub.gelir, tMar.gelir, tNis.gelir, tMay.gelir, tHaz.gelir], fill:true,
            borderWidth:2, pointRadius:5, pointBackgroundColor:'#10b981', tension:.3},
           {label:'Gider (₺k)', borderColor:'#ef4444', backgroundColor:gc('#ef4444',.08),
-           data:[tOca.gider, tSub.gider, tMar.gider, tNis.gider, tMay.gider], fill:true,
+           data:[tOca.gider, tSub.gider, tMar.gider, tNis.gider, tMay.gider, tHaz.gider], fill:true,
            borderWidth:2, pointRadius:5, pointBackgroundColor:'#ef4444', tension:.3},
           {label:'Net Kar (₺k)', borderColor:'#f59e0b', borderDash:[6,3], backgroundColor:'transparent',
-           data:[tOca.kar, tSub.kar, tMar.kar, tNis.kar, tMay.kar], fill:false,
+           data:[tOca.kar, tSub.kar, tMar.kar, tNis.kar, tMay.kar, tHaz.kar], fill:false,
            borderWidth:2, pointRadius:5, pointBackgroundColor:'#f59e0b', tension:.3}
         ]
       },
@@ -1972,7 +2088,7 @@ function setPeriod(period, btn) {
   currentPeriod = period;
   document.querySelectorAll('.ptab').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
-  var etiket = {oca:'Ocak 2026', sub:'Şubat 2026', mar:'Mart 2026', nis:'Nisan 2026', may:'Mayıs 2026', '2026':'2026 Özet (Oca–May)'};
+  var etiket = {oca:'Ocak 2026', sub:'Şubat 2026', mar:'Mart 2026', nis:'Nisan 2026', may:'Mayıs 2026', haz:'Haziran 2026', '2026':'2026 Özet (Oca–Haz)'};
   document.getElementById('donem-text').textContent = 'Dönem: '+(etiket[period]||period);
   render(period);
 }
