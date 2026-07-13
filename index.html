@@ -466,14 +466,14 @@ body {
       <div class="card-header">
         <div>
           <div class="card-title">📊 Aylık Yakıt Trendi</div>
-          <div class="card-desc">Filo toplam litre tüketimi · Ocak–Mayıs 2026 · Haziran litre bekleniyor</div>
+          <div class="card-desc">Filo toplam litre tüketimi · Ocak–Haziran 2026</div>
         </div>
       </div>
       <div class="card-body">
         <div class="chart-wrap" style="height:130px">
           <canvas id="chart-litre-trend"></canvas>
         </div>
-        <div id="yakıt-kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;"></div>
+        <div id="yakıt-kpi-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;"></div>
       </div>
     </div>
   </div>
@@ -1301,6 +1301,41 @@ const MAY_LITRE = {
   '34 VBF 69':  4296.53,
   '34 VBL 69':  4681.91,
 };
+// Haziran 2026 — Mazot litre (kaynak: HAFRİYAT KAMYONLARI mazot tank dökümü,
+//   5 tank HAREKET MİKTARI toplamı çekici bazlı; GENEL TOPLAM 111.220,2 L ile birebir tutuyor)
+const HAZ_LITRE = {
+  '06 EAH 375': 2697.86,
+  '34 BDF 517': 1753.69,
+  '34 BDM 178': 3252.67,
+  '34 BDM 249': 3864.26,
+  '34 FBU 710': 229.69,
+  '34 HBM 483': 3993.46,
+  '34 HD 8469': 310.56,
+  '34 HDC 243': 6796.20,
+  '34 HDC 303': 4607.59,
+  '34 HDC 358': 6133.07,
+  '34 HDC 400': 3096.99,
+  '34 JIE 69':  4144.00,
+  '34 KV 0069': 4196.91,
+  '34 KV 0169': 6209.80,
+  '34 KV 0369': 2944.96,
+  '34 KV 0469': 5625.95,
+  '34 KV 0569': 5863.97,
+  '34 KV 0869': 4394.71,
+  '34 KV 4969': 3740.60,
+  '34 KV 6369': 4251.02,
+  '34 KV 9169': 2925.04,
+  '34 KV 9269': 4215.74,
+  '34 LEK 69':  1205.00,
+  '34 LUA 69':  1866.45,
+  '34 LUD 69':  3455.00,
+  '34 LUF 69':  3944.93,
+  '34 LUZ 69':  2528.79,
+  '34 TG 3769': 2753.67,
+  '34 TG 3869': 2082.73,
+  '34 VBF 69':  3953.45,
+  '34 VBL 69':  4181.44,
+};
 
 function getLitre(period) {
   if(period === 'oca') return OCA_LITRE;
@@ -1308,9 +1343,9 @@ function getLitre(period) {
   if(period === 'mar') return MAR_LITRE;
   if(period === 'nis') return NIS_LITRE;
   if(period === 'may') return MAY_LITRE;
-  if(period === 'haz') return {};  // Haziran litre verisi bekleniyor
+  if(period === 'haz') return HAZ_LITRE;
   if(period === '2026') {
-    var r = {}, p, allSrc = [OCA_LITRE, SUB_LITRE, MAR_LITRE, NIS_LITRE, MAY_LITRE];
+    var r = {}, p, allSrc = [OCA_LITRE, SUB_LITRE, MAR_LITRE, NIS_LITRE, MAY_LITRE, HAZ_LITRE];
     for(var i=0;i<allSrc.length;i++){ for(p in allSrc[i]){ r[p]=(r[p]||0)+(allSrc[i][p]||0); } }
     return r;
   }
@@ -1329,8 +1364,8 @@ function getMazotFiyati(period) {
   if(period==='mar') return 52.42;  // 5,565,387 ₺ / 106,169 L
   if(period==='nis') return 59.86;  // 8,292,908 ₺ / 138,541 L
   if(period==='may') return 55.78;  // 6,190,507 ₺ / 110,982 L
-  if(period==='haz') return 54.58;  // Haziran litre bekleniyor — yıl ort.
-  if(period==='2026') return 54.58; // yıl ort.
+  if(period==='haz') return 54.50;  // 6,061,281 ₺ / 111,220 L
+  if(period==='2026') return 54.50; // yıl ort.
   return 50;
 }
 
@@ -1800,16 +1835,17 @@ function render(period) {
   var marL = Object.keys(MAR_LITRE).reduce(function(s,p){return s+(MAR_LITRE[p]||0);},0);
   var nisL = Object.keys(NIS_LITRE).reduce(function(s,p){return s+(NIS_LITRE[p]||0);},0);
   var mayL = Object.keys(MAY_LITRE).reduce(function(s,p){return s+(MAY_LITRE[p]||0);},0);
+  var hazL = Object.keys(HAZ_LITRE).reduce(function(s,p){return s+(HAZ_LITRE[p]||0);},0);
 
   if(charts.litreTrend){charts.litreTrend.destroy();}
   charts.litreTrend = new Chart(document.getElementById('chart-litre-trend'), {
     type:'bar',
     data:{
-      labels:['Ocak','Şubat','Mart','Nisan','Mayıs'],
+      labels:['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran'],
       datasets:[{
         label:'Toplam Litre',
-        data:[Math.round(ocaL), Math.round(subL), Math.round(marL), Math.round(nisL), Math.round(mayL)],
-        backgroundColor:[gc('#3b82f6',.7), gc('#3b82f6',.7), gc('#3b82f6',.7), gc('#3b82f6',.7), gc('#f59e0b',.8)],
+        data:[Math.round(ocaL), Math.round(subL), Math.round(marL), Math.round(nisL), Math.round(mayL), Math.round(hazL)],
+        backgroundColor:[gc('#3b82f6',.7), gc('#3b82f6',.7), gc('#3b82f6',.7), gc('#3b82f6',.7), gc('#3b82f6',.7), gc('#f59e0b',.8)],
         borderRadius:3
       }]
     },
@@ -1832,6 +1868,7 @@ function render(period) {
       {ay:'Mart',   litre:marL,  fiyat:52.42},
       {ay:'Nisan',  litre:nisL,  fiyat:59.86},
       {ay:'Mayıs',  litre:mayL,  fiyat:55.78},
+      {ay:'Haziran',litre:hazL,  fiyat:54.50},
     ];
     yakitKpiEl.innerHTML = aylıkVeri.map(function(v){
       return '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:8px 10px;text-align:center">'
